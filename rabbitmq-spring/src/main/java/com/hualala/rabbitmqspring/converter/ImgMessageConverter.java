@@ -1,4 +1,4 @@
-package com.hualala.rabbitmqspring.cconverter;
+package com.hualala.rabbitmqspring.converter;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;

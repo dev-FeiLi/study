@@ -1,4 +1,4 @@
-package com.hualala.rabbitmqspring.cconverter;
+package com.hualala.rabbitmqspring.converter;
 
 public class ConverterBody {
 

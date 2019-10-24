@@ -1,16 +1,13 @@
 package com.hualala.rabbitmqspring.config;
 
 
-import com.hualala.rabbitmqspring.cconverter.ImgMessageConverter;
-import com.hualala.rabbitmqspring.cconverter.PDFMessageConverter;
-import com.hualala.rabbitmqspring.cconverter.TextMessageConverter;
-import com.rabbitmq.client.Channel;
-import com.sun.org.apache.xpath.internal.jaxp.JAXPVariableStack;
+import com.hualala.rabbitmqspring.converter.ImgMessageConverter;
+import com.hualala.rabbitmqspring.converter.PDFMessageConverter;
+import com.hualala.rabbitmqspring.converter.TextMessageConverter;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -19,9 +16,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.amqp.support.converter.ContentTypeDelegatingMessageConverter;
-import org.springframework.amqp.support.converter.DefaultJackson2JavaTypeMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -130,6 +125,7 @@ public class RabbitMQConfig {
          *  1. new MessageListener 监听器
          *  2. new MessageListenerAdapter 适配器
          */
+
         /** new MessageListener直接创建监听器, 重写onMessage方法 **/
 //        container.setMessageListener(new ChannelAwareMessageListener() {
 //            @Override
@@ -140,20 +136,27 @@ public class RabbitMQConfig {
 //            }
 //        });
 
-
         /**
          * new MessageListenerAdapter消息监听适配器方式
          * 可以指定Delegate委托对象: 实际自定义的委托对象, 用户处理消息
-         * setDefaultListenerMethod(String methodName)来设置方法名为我们自己写的方法名
-         * setQueueOrTagToMethodName 队列标识与方法名称组合的集合: 可以一一进行队列和方法名称绑定,指定队列的消息会被绑定的方法接受处理
+         * 1. setDefaultListenerMethod(String methodName)来设置方法名为我们自己写的方法名
+         * 2. setQueueOrTagToMethodName 队列标识与方法名称组合的集合: 可以一一进行队列和方法名称绑定,指定队列的消息会被绑定的方法接受处理
          * 可以添加一个自定义转换器: fromMessage方法里面写定规则, 从字节数组转换为String
          */
-
+        // 1 setDefaultListenerMethod(String methodName)
 //        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
 //        adapter.setDefaultListenerMethod("consumeMessage");
 //        adapter.setMessageConverter(new TextMessageConverter());
 //        container.setMessageListener(adapter);
 
+        // 2 setQueueOrTagToMethodName(Map<K,V> map) 队列名称跟方法 一一进行匹配
+        /*MessageListenerAdapter adapter1 = new MessageListenerAdapter(new MessageDelegate());
+        adapter1.setMessageConverter(new TextMessageConverter());
+        Map<String, String> map = new HashMap<>();
+        map.put("queue001", "method1");
+        map.put("queue002", "method2");
+        adapter1.setQueueOrTagToMethodName(map);
+        container.setMessageListener(adapter1);*/
 
         /** 1.1支持Json格式的转换器 **/
 //        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
@@ -161,6 +164,7 @@ public class RabbitMQConfig {
 //
 //        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();
 //        adapter.setMessageConverter(jackson2JsonMessageConverter);
+
 //        container.setMessageListener(adapter);
 
 
@@ -169,18 +173,17 @@ public class RabbitMQConfig {
 //        adapter.setDefaultListenerMethod("consumeMessage");
 //
 //        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();
-//
 //        DefaultJackson2JavaTypeMapper javaTypeMapper = new DefaultJackson2JavaTypeMapper();
 //        jackson2JsonMessageConverter.setJavaTypeMapper(javaTypeMapper);
-//
 //        adapter.setMessageConverter(jackson2JsonMessageConverter);
+
 //        container.setMessageListener(adapter);
 
 
         /** 1.3 自定义其他类型Img, PDF等类型转换器  **/
         MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());
         adapter.setDefaultListenerMethod("consumeMessage");
-
+        // 全局转换器
         ContentTypeDelegatingMessageConverter converter = new ContentTypeDelegatingMessageConverter();
         TextMessageConverter textConverter = new TextMessageConverter();
         converter.addDelegate("text", textConverter);

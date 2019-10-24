@@ -31,11 +31,12 @@
         </dependency>
 
         <!-- rabbitMQ -->
-        <!--<dependency>-->
-            <!--<groupId>com.rabbitmq</groupId>-->
-            <!--<artifactId>amqp-client</artifactId>-->
-            <!--<version>3.6.5</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.6.5</version>
+        </dependency>
+        <!-- SprinBoot amqp -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>

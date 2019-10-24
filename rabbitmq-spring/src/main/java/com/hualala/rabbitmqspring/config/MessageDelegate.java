@@ -37,4 +37,13 @@ public class MessageDelegate {
     public void consumeMessage(File file) {
         System.out.println("文件对象方法, 消息内容: " + file.getName());
     }
+
+
+    public void method1(String messageBody) {
+        System.out.println("---method1 收到消息内容: " + messageBody);
+    }
+
+    public void method2(String messageBody) {
+        System.out.println("---method2 收到消息内容: " + messageBody);
+    }
 }
